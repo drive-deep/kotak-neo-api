@@ -37,7 +37,8 @@ class NeoAPI:
                 Sets the edit token, SID, RID, and server ID in the configuration.
     """
 
-    def __init__(self, environment="uat", access_token=None, consumer_key=None, consumer_secret=None, neo_fin_key=None):
+    def __init__(self, environment="prod", access_token=None, consumer_key=None, consumer_secret=None, neo_fin_key=None,
+                 login_session: dict = {}, on_message=None, on_error=None, on_close=None, on_open=None):
         """
     Initializes the class and sets up the necessary configurations for the API client.
 
@@ -58,12 +59,18 @@ class NeoAPI:
     ApiException: if the session initiation fails.
     """
 
-        self.on_message = None
-        self.on_error = None
-        self.on_close = None
-        self.on_open = None
+        self.on_message = on_message
+        self.on_error = on_error
+        self.on_close = on_close
+        self.on_open = on_open
 
-        if not access_token:
+        if login_session:
+            try:
+                self.configuration = neo_api_client.NeoUtility(login_session=login_session)
+                self.api_client = ApiClient(self.configuration)
+            except Exception as e:
+                print(f"Please login again : {e}")
+        elif not access_token:
             neo_api_client.req_data_validation.validate_configuration(consumer_key, consumer_secret)
             self.configuration = neo_api_client.NeoUtility(consumer_key=consumer_key, consumer_secret=consumer_secret,
                                                            host=environment)
@@ -136,6 +143,9 @@ class NeoAPI:
         """
         edit_token = neo_api_client.LoginAPI(self.api_client).login_2fa(OTP)
         return edit_token
+
+    def get_configuration_json(self):
+        return vars(self.configuration)
 
     def place_order(self, exchange_segment, product, price, order_type, quantity, validity, trading_symbol,
                     transaction_type, amo="NO", disclosed_quantity="0", market_protection="0", pf="N",

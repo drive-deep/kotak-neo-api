@@ -15,21 +15,39 @@ class NeoUtility:
         Project configuration (or) Params to be passed here
     """
 
-    def __init__(self, consumer_key=None, consumer_secret=None, host=None, access_token=None, neo_fin_key=None):
-        self.consumer_key = consumer_key
-        self.consumer_secret = consumer_secret
-        self.host = host
-        self.base64_token = self.convert_base64()
-        self.bearer_token = access_token
-        self.view_token = None
-        self.sid = None
-        self.userId = None
-        self.edit_token = None
-        self.edit_sid = None
-        self.edit_rid = None
-        self.serverId = None
-        self.login_params = None
-        self.neo_fin_key = neo_fin_key
+    def __init__(self, consumer_key=None, consumer_secret=None, host="prod", access_token=None, neo_fin_key=None,
+                 login_session: dict = {}):
+        if login_session:
+            self.consumer_key = login_session.get('consumer_key')
+            self.consumer_secret = login_session.get('consumer_secret')
+            self.host = login_session.get('host')
+            self.base64_token = login_session.get('base64_token')
+            self.bearer_token = login_session.get('bearer_token')
+            self.view_token = login_session.get('view_token')
+            self.sid = login_session.get('sid')
+            self.userId = login_session.get('userId')
+            self.edit_token = login_session.get('edit_token')
+            self.edit_sid = login_session.get('edit_sid')
+            self.edit_rid = login_session.get('edit_rid')
+            self.serverId = login_session.get('serverId')
+            self.login_params = login_session.get('login_params')
+            self.neo_fin_key = login_session.get('neo_fin_key')
+
+        else:
+            self.consumer_key = consumer_key
+            self.consumer_secret = consumer_secret
+            self.host = host
+            self.base64_token = self.convert_base64()
+            self.bearer_token = access_token
+            self.view_token = None
+            self.sid = None
+            self.userId = None
+            self.edit_token = None
+            self.edit_sid = None
+            self.edit_rid = None
+            self.serverId = None
+            self.login_params = None
+            self.neo_fin_key = neo_fin_key
 
     def convert_base64(self):
         """The Base64 Token Generation.
